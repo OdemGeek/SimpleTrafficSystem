@@ -1,0 +1,16 @@
+{
+    "name": "ImersiFOX.AICarControllerSystem",
+    "rootNamespace": "ImersiFOX.AICarControllerSystem",
+    "references": [
+        "GUID:894a249b8bf90e5499daea516baeb1de"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
