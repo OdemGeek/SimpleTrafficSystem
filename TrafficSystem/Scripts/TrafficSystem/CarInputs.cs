@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ImersiFOX.TrafficSystem
 {
+    [AddComponentMenu("Traffic System/AI/Car Inputs")]
     public class CarInputs : MonoBehaviour
     {
         public float maxSpeed { get; internal set; }

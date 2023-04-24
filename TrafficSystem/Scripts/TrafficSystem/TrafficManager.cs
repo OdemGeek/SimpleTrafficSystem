@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace ImersiFOX.TrafficSystem
 {
+    [AddComponentMenu("Traffic System/Manager")]
     public class TrafficManager : MonoBehaviour
     {
         public static Transform _playerCamera;

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace ImersiFOX.AICarControllerSystem
 {
+    [AddComponentMenu("Traffic System/AI/Car Controller")]
     public class AICarController : MonoBehaviour
     {
         private float steerAngle;

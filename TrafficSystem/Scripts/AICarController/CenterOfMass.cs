@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ImersiFOX.AICarControllerSystem
 {
+    [AddComponentMenu("Traffic System/AI/Center Of Mass")]
     public class CenterOfMass : MonoBehaviour
     {
         [SerializeField] private Transform _point;
