@@ -1,9 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
-using UnityEngine.UIElements;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.AddressableAssets;
+using System.Runtime.InteropServices;
 
 namespace ImersiFOX.TrafficSystem
 {
@@ -40,8 +41,7 @@ namespace ImersiFOX.TrafficSystem
         private float _splineOffset;
         private float _splineOffsetCurvature;
         private bool _spawnedCarThisFrame = false;
-
-        private WaitForFixedUpdate waitForFixedUpdate;
+        private int _carsSpawned = 0;
 
         private void Awake()
         {
@@ -51,41 +51,44 @@ namespace ImersiFOX.TrafficSystem
             _splineUnit = 1f / _splineContainer.Spline.GetLength();
             _splineOffset = _splineUnit * LOOK_AHEAD_DIST;
             _splineOffsetCurvature = _splineUnit * LOOK_AHEAD_DIST_CURVATURE;
-            waitForFixedUpdate = new WaitForFixedUpdate();
-            StartCoroutine(SpawnCars());
+            SpawnCars();
         }
 
-        IEnumerator SpawnCars()
+        void SpawnCars()
         {
             for (int i = 0; i < _carsSimulationCount; i++)
             {
-                bool spawned = false;
-                _cars[i] = Instantiate(Resources.Load(_carsData.GetCarRandom()) as GameObject,
-                    new Vector3(0, -2000, 0), Quaternion.identity)
-                    .GetComponent<CarInputs>();
-                _carsRb[i] = _cars[i].GetComponent<Rigidbody>();
+                AssetReferenceGameObject carReference = _carsData.GetCarRandom();
+                carReference.InstantiateAsync().Completed += SpawnCar;
 
-                _cars[i].maxSpeed = UnityEngine.Random.Range(_minMaxSpeed.x, _minMaxSpeed.y);
-                (Vector3 pos, Vector3 dir, int lane) = GetSpawnPosition(_playerCamera.position);
-                Collider[] collsOverlap = Physics.OverlapSphere(pos, 10f, _layerCars, QueryTriggerInteraction.Ignore);
-                if (collsOverlap.Length == 0)
-                {
-                    _cars[i].laneIndex = lane;
-                    _cars[i].transform.position = pos;
-                    _cars[i].transform.forward = dir;
-                    _carsRb[i].velocity = dir * 5;
-                    //_spawnedCarThisFrame = true;
-                    Physics.SyncTransforms();
-                }
-                else
-                {
-                    _cars[i].transform.position = new Vector3(0, -2000, 0);
-                    _carsRb[i].isKinematic = true;
-                }
-
-                //yield return waitForFixedUpdate;
             }
-            yield return null;
+        }
+
+        private void SpawnCar(AsyncOperationHandle<GameObject> obj) => SpawnCar(obj.Result);
+
+        private void SpawnCar(GameObject obj)
+        {
+            //_cars[_carsSpawned] = Instantiate(obj, new Vector3(0, -2000, 0), Quaternion.identity).GetComponent<CarInputs>();
+            _cars[_carsSpawned] = obj.GetComponent<CarInputs>();
+            _carsRb[_carsSpawned] = _cars[_carsSpawned].GetComponent<Rigidbody>();
+
+            _cars[_carsSpawned].maxSpeed = UnityEngine.Random.Range(_minMaxSpeed.x, _minMaxSpeed.y);
+            (Vector3 pos, Vector3 dir, int lane) = GetSpawnPosition(_playerCamera.position);
+            Collider[] collsOverlap = Physics.OverlapSphere(pos, 10f, _layerCars, QueryTriggerInteraction.Ignore);
+            if (collsOverlap.Length == 0)
+            {
+                _cars[_carsSpawned].laneIndex = lane;
+                _cars[_carsSpawned].transform.position = pos;
+                _cars[_carsSpawned].transform.forward = dir;
+                _carsRb[_carsSpawned].velocity = dir * 5;
+                Physics.SyncTransforms();
+            }
+            else
+            {
+                _cars[_carsSpawned].transform.position = new Vector3(0, -2000, 0);
+                _carsRb[_carsSpawned].isKinematic = true;
+            }
+            _carsSpawned++;
         }
 
         private void FixedUpdate()

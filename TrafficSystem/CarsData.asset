@@ -13,4 +13,10 @@ MonoBehaviour:
   m_Name: CarsData
   m_EditorClassIdentifier: 
   _cars:
-  - AICar
+  - prefab:
+      m_AssetGUID: c378b7ba17645b74f91a29a9f51052dc
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    chance: 1
+  _sumOfChances: 1
